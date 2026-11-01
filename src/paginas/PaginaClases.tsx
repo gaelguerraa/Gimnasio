@@ -39,6 +39,7 @@ export function PaginaClases() {
               className="tarjeta-clase__imagen"
               src={urlImagen(clase.imagen)}
               alt={clase.nombre}
+              loading="lazy"
             />
 
             <div className="tarjeta-clase__cuerpo">

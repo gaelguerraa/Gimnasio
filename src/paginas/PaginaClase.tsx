@@ -6,12 +6,15 @@ import { useClase } from '../hooks/useClase.ts';
 import { useSesion } from '../sesion/SesionContext.tsx';
 import { inscribirse } from '../servicios/gimnasio.ts';
 import { mensajeDeError, urlImagen } from '../servicios/api.ts';
+import { useInscripcionesStore } from '../stores/inscripciones.ts';
 
 export function PaginaClase() {
   const { id } = useParams();
   const navegar = useNavigate();
   const ubicacion = useLocation();
   const { sesion } = useSesion();
+  const { inscripciones, cargar: cargarInscripciones } = useInscripcionesStore();
+  const horariosInscritos = new Set(inscripciones.filter((i) => i.estado === 'confirmada').map((i) => i.horario.id));
   const idClase = Number(id);
   const { clase, cargando, error, reintentar } = useClase(idClase);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -32,6 +35,7 @@ export function PaginaClase() {
 
     try {
       await inscribirse(horarioId);
+      await cargarInscripciones();
       setAviso('Inscripción realizada correctamente.');
       reintentar();
     } catch (e) {
@@ -89,7 +93,9 @@ export function PaginaClase() {
                   </div>
                 </div>
 
-                {horario.disponibles === 0 ? (
+                {horariosInscritos.has(horario.id) ? (
+                  <span className="horario__lleno">Inscrito</span>
+                ) : horario.disponibles === 0 ? (
                   <span className="horario__lleno">Lleno</span>
                 ) : (
                   <button

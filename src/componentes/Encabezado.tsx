@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router';
 import { useSesion } from '../sesion/SesionContext.tsx';
+import { useInscripcionesStore } from '../stores/inscripciones.ts';
 
 function claseEnlace({ isActive }: { isActive: boolean }) {
   return isActive ? 'barra__enlace barra__enlace--activo' : 'barra__enlace';
@@ -7,6 +8,7 @@ function claseEnlace({ isActive }: { isActive: boolean }) {
 
 export function Encabezado() {
   const { sesion, salir } = useSesion();
+  const cantidadInscripciones = useInscripcionesStore((estado) => estado.inscripciones.length);
 
   return (
     <header className="barra">
@@ -23,7 +25,7 @@ export function Encabezado() {
             </li>
             <li>
               <NavLink to="/mis-inscripciones" className={claseEnlace}>
-                Mis inscripciones
+                Mis inscripciones{sesion ? ` (${cantidadInscripciones})` : ''}
               </NavLink>
             </li>
           </ul>
